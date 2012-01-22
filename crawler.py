@@ -17,20 +17,11 @@ seed_uri = sys.argv[1]
 crawl_depth = int(sys.argv[2])
 search_term = ' '.join(sys.argv[3:])
 
-results = set()
-crawled = set() # To eliminate reparsing
+crawled = set()
 uris = set([seed_uri])
 for level in range(crawl_depth):
-    print(level, len(uris))
     new_uris = set()
-    print('-' * len(uris))
     for uri in uris:
-        if uri in crawled:
-            print('+', end='')
-            sys.stdout.flush()
-        else:
-            print('.', end='')
-            sys.stdout.flush()
         if uri in crawled:
             continue
         crawled.add(uri)
@@ -40,11 +31,11 @@ for level in range(crawl_depth):
         except Exception as e:
             continue
         # Search for search_term
-        if uri not in results and search_term in content:
-            results.add(uri)
+        if search_term in content:
+            print(uri)
         # Find child URIs, and add them to the new_uris set
-        d = pyquery.PyQuery(content)
-        for anchor in d('a'):
+        dom = pyquery.PyQuery(content)
+        for anchor in dom('a'):
             try:
                 link = anchor.attrib['href']
             except KeyError:
@@ -52,6 +43,3 @@ for level in range(crawl_depth):
             new_uri = urlparse.urljoin(uri, link)
             new_uris.add(new_uri)
     uris = new_uris
-    print()
-for result in results:
-    print(result)
