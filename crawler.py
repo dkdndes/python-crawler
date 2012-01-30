@@ -33,7 +33,7 @@ def crawl(seed, depth, terms):
                 if term in content:
                     found += 1
             if found > 0:
-                yield (uri, found)
+                yield (uri, found, level + 1)
             # Find child URIs, and add them to the new_uris set
             dom = pyquery.PyQuery(content)
             for anchor in dom('a'):
@@ -58,5 +58,5 @@ if __name__ == '__main__':
     crawl_depth = int(sys.argv[2])
     search_terms = sys.argv[3:]
 
-    for uri, count in crawl(seed_uri, crawl_depth, search_terms):
+    for uri, count, depth in crawl(seed_uri, crawl_depth, search_terms):
         print(uri)
